@@ -1,7 +1,6 @@
 """mssql_list_databases / mssql_list_tables / mssql_describe_table 工具实现"""
 
 import json
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -21,10 +20,6 @@ class ListDatabasesInput(BaseModel):
 class ListTablesInput(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
-    database: Optional[str] = Field(
-        default=None,
-        description="数据库名称，不填则使用默认库",
-    )
     schema: str = Field(
         default="dbo",
         description="Schema 名称",
@@ -41,10 +36,6 @@ class DescribeTableInput(BaseModel):
 
     table_name: str = Field(..., description="表名", min_length=1)
     schema: str = Field(default="dbo", description="Schema 名称")
-    database: Optional[str] = Field(
-        default=None,
-        description="数据库名称，不填则使用默认库",
-    )
     response_format: str = Field(
         default="markdown",
         description="输出格式：markdown 或 json",
@@ -79,7 +70,7 @@ async def list_tables(params: ListTablesInput) -> str:
         ORDER BY TABLE_SCHEMA, TABLE_NAME
     """
     try:
-        rows = await execute(sql, params=(params.schema,), database=params.database)
+        rows = await execute(sql, params=(params.schema,))
     except Exception as e:
         return handle_db_error(e)
 
@@ -109,11 +100,7 @@ async def describe_table(params: DescribeTableInput) -> str:
         ORDER BY ORDINAL_POSITION
     """
     try:
-        rows = await execute(
-            sql,
-            params=(params.table_name, params.schema),
-            database=params.database,
-        )
+        rows = await execute(sql, params=(params.table_name, params.schema))
     except Exception as e:
         return handle_db_error(e)
 

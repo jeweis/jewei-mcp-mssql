@@ -8,20 +8,19 @@ from typing import Any
 import pytds
 
 
-def _get_conn_params(database: str | None = None) -> dict:
+def _get_conn_params() -> dict:
     return {
         "server": os.getenv("MSSQL_HOST", "localhost"),
         "port": int(os.getenv("MSSQL_PORT", "1433")),
-        "database": database or os.getenv("MSSQL_DATABASE", "master"),
+        "database": os.getenv("MSSQL_DATABASE", "master"),
         "user": os.getenv("MSSQL_USERNAME", ""),
         "password": os.getenv("MSSQL_PASSWORD", ""),
         "as_dict": True,
     }
 
 
-def _sync_execute(sql: str, params: Any, database: str | None) -> list[dict]:
-    conn_params = _get_conn_params(database)
-    with pytds.connect(**conn_params) as conn:
+def _sync_execute(sql: str, params: Any) -> list[dict]:
+    with pytds.connect(**_get_conn_params()) as conn:
         with conn.cursor() as cur:
             cur.execute(sql, params)
             if cur.description:
@@ -30,9 +29,9 @@ def _sync_execute(sql: str, params: Any, database: str | None) -> list[dict]:
             return [{"affected_rows": cur.rowcount}]
 
 
-async def execute(sql: str, params: Any = None, database: str | None = None) -> list[dict]:
+async def execute(sql: str, params: Any = None) -> list[dict]:
     loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, partial(_sync_execute, sql, params, database))
+    return await loop.run_in_executor(None, partial(_sync_execute, sql, params))
 
 
 def handle_db_error(e: Exception) -> str:

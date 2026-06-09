@@ -1,7 +1,6 @@
 """mssql_execute_sql 工具实现"""
 
 import json
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -22,10 +21,6 @@ class ExecuteSqlInput(BaseModel):
     )
 
     sql: str = Field(..., description="要执行的 SQL 语句", min_length=1)
-    database: Optional[str] = Field(
-        default=None,
-        description="指定数据库名称，不填则使用 MSSQL_DATABASE 环境变量",
-    )
     max_rows: int = Field(
         default=100,
         description="SELECT 查询最大返回行数（1-500）",
@@ -61,7 +56,7 @@ async def execute_sql(params: ExecuteSqlInput) -> str:
         return denied
 
     try:
-        rows = await execute(params.sql, database=params.database)
+        rows = await execute(params.sql)
     except Exception as e:
         return handle_db_error(e)
 
