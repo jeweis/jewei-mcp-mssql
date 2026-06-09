@@ -1,7 +1,6 @@
 """mssql_list_databases / mssql_list_tables / mssql_describe_table 工具实现"""
 
 import json
-from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
