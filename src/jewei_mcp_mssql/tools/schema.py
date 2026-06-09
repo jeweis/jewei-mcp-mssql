@@ -36,11 +36,11 @@ class DescribeTableInput(BaseModel):
 async def get_db_info(response_format: str = "markdown") -> str:
     sql = """
         SELECT
-            DB_NAME()        AS database_name,
-            @@SERVERNAME     AS server_name,
-            @@VERSION        AS server_version,
-            SUSER_SNAME()    AS current_user,
-            @@LANGUAGE       AS language,
+            DB_NAME()         AS database_name,
+            @@SERVERNAME      AS server_name,
+            @@VERSION         AS server_version,
+            SUSER_SNAME()     AS login_user,
+            @@LANGUAGE        AS language,
             @@MAX_CONNECTIONS AS max_connections
     """
     try:
@@ -62,7 +62,7 @@ async def get_db_info(response_format: str = "markdown") -> str:
         "",
         f"- **数据库名称**：{info.get('database_name')}",
         f"- **服务器名称**：{info.get('server_name')}",
-        f"- **当前用户**：{info.get('current_user')}",
+        f"- **当前用户**：{info.get('login_user')}",
         f"- **语言**：{info.get('language')}",
         f"- **最大连接数**：{info.get('max_connections')}",
         f"- **版本**：{version_line}",
