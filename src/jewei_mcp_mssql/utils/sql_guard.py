@@ -45,10 +45,10 @@ def check_permission(sql_type: SqlType) -> str | None:
         return None
 
     checks = {
-        SqlType.INSERT: ("MSSQL_ALLOW_INSERT", "INSERT"),
-        SqlType.UPDATE: ("MSSQL_ALLOW_UPDATE", "UPDATE"),
-        SqlType.DELETE: ("MSSQL_ALLOW_DELETE", "DELETE"),
-        SqlType.DDL: ("MSSQL_ALLOW_DDL", "DDL（CREATE/DROP/ALTER/TRUNCATE）"),
+        SqlType.INSERT: ("DB_ALLOW_INSERT", "INSERT"),
+        SqlType.UPDATE: ("DB_ALLOW_UPDATE", "UPDATE"),
+        SqlType.DELETE: ("DB_ALLOW_DELETE", "DELETE"),
+        SqlType.DDL: ("DB_ALLOW_DDL", "DDL（CREATE/DROP/ALTER/TRUNCATE）"),
     }
 
     if sql_type in checks:

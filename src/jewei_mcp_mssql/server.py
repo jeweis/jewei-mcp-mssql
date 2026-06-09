@@ -33,10 +33,10 @@ async def tool_execute_sql(params: ExecuteSqlInput) -> str:
 
     支持 SELECT 查询以及可选的 INSERT / UPDATE / DELETE / DDL 操作。
     写操作权限通过环境变量控制：
-    - MSSQL_ALLOW_INSERT=true   启用 INSERT
-    - MSSQL_ALLOW_UPDATE=true   启用 UPDATE
-    - MSSQL_ALLOW_DELETE=true   启用 DELETE
-    - MSSQL_ALLOW_DDL=true      启用 DDL（CREATE/DROP/ALTER/TRUNCATE）
+    - DB_ALLOW_INSERT=true   启用 INSERT
+    - DB_ALLOW_UPDATE=true   启用 UPDATE
+    - DB_ALLOW_DELETE=true   启用 DELETE
+    - DB_ALLOW_DDL=true      启用 DDL（CREATE/DROP/ALTER/TRUNCATE）
 
     默认仅允许 SELECT，所有写操作均被拒绝。
 

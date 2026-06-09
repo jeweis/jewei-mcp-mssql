@@ -10,11 +10,11 @@ import pytds  # type: ignore[import-untyped]
 
 def _get_conn_params() -> dict[str, Any]:
     return {
-        "server": os.getenv("MSSQL_HOST", "localhost"),
-        "port": int(os.getenv("MSSQL_PORT", "1433")),
-        "database": os.getenv("MSSQL_DATABASE", "master"),
-        "user": os.getenv("MSSQL_USERNAME", ""),
-        "password": os.getenv("MSSQL_PASSWORD", ""),
+        "server": os.getenv("DB_HOST", "localhost"),
+        "port": int(os.getenv("DB_PORT", "1433")),
+        "database": os.getenv("DB_NAME", "master"),
+        "user": os.getenv("DB_USER", ""),
+        "password": os.getenv("DB_PASSWORD", ""),
         "as_dict": True,
     }
 
@@ -36,9 +36,9 @@ async def execute(sql: str, params: Any = None) -> list[dict[str, Any]]:
 
 def handle_db_error(e: Exception) -> str:
     if isinstance(e, pytds.exceptions.LoginError):
-        return "错误：认证失败，请检查 MSSQL_USERNAME / MSSQL_PASSWORD"
+        return "错误：认证失败，请检查 DB_USER / DB_PASSWORD"
     if isinstance(e, pytds.exceptions.DatabaseError):
         return f"错误：SQL 执行失败 — {e}"
     if isinstance(e, OSError):
-        return "错误：无法连接到 SQL Server，请检查 MSSQL_HOST / MSSQL_PORT"
+        return "错误：无法连接到 SQL Server，请检查 DB_HOST / DB_PORT"
     return f"错误：{type(e).__name__}: {e}"

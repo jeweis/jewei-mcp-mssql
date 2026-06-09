@@ -51,37 +51,37 @@ class TestCheckPermission:
         assert check_permission(SqlType.SELECT) is None
 
     def test_insert_denied_by_default(self, monkeypatch):
-        monkeypatch.delenv("MSSQL_ALLOW_INSERT", raising=False)
+        monkeypatch.delenv("DB_ALLOW_INSERT", raising=False)
         result = check_permission(SqlType.INSERT)
         assert result is not None
-        assert "MSSQL_ALLOW_INSERT" in result
+        assert "DB_ALLOW_INSERT" in result
 
     def test_insert_allowed_when_env_set(self, monkeypatch):
-        monkeypatch.setenv("MSSQL_ALLOW_INSERT", "true")
+        monkeypatch.setenv("DB_ALLOW_INSERT", "true")
         assert check_permission(SqlType.INSERT) is None
 
     def test_update_denied_by_default(self, monkeypatch):
-        monkeypatch.delenv("MSSQL_ALLOW_UPDATE", raising=False)
+        monkeypatch.delenv("DB_ALLOW_UPDATE", raising=False)
         result = check_permission(SqlType.UPDATE)
         assert result is not None
-        assert "MSSQL_ALLOW_UPDATE" in result
+        assert "DB_ALLOW_UPDATE" in result
 
     def test_delete_denied_by_default(self, monkeypatch):
-        monkeypatch.delenv("MSSQL_ALLOW_DELETE", raising=False)
+        monkeypatch.delenv("DB_ALLOW_DELETE", raising=False)
         result = check_permission(SqlType.DELETE)
         assert result is not None
-        assert "MSSQL_ALLOW_DELETE" in result
+        assert "DB_ALLOW_DELETE" in result
 
     def test_ddl_denied_by_default(self, monkeypatch):
-        monkeypatch.delenv("MSSQL_ALLOW_DDL", raising=False)
+        monkeypatch.delenv("DB_ALLOW_DDL", raising=False)
         result = check_permission(SqlType.DDL)
         assert result is not None
-        assert "MSSQL_ALLOW_DDL" in result
+        assert "DB_ALLOW_DDL" in result
 
     def test_env_value_1_is_truthy(self, monkeypatch):
-        monkeypatch.setenv("MSSQL_ALLOW_UPDATE", "1")
+        monkeypatch.setenv("DB_ALLOW_UPDATE", "1")
         assert check_permission(SqlType.UPDATE) is None
 
     def test_env_value_yes_is_truthy(self, monkeypatch):
-        monkeypatch.setenv("MSSQL_ALLOW_DELETE", "yes")
+        monkeypatch.setenv("DB_ALLOW_DELETE", "yes")
         assert check_permission(SqlType.DELETE) is None

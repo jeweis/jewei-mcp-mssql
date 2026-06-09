@@ -22,11 +22,11 @@ Microsoft SQL Server MCP Server — 让 AI 助手能够查询和操作 SQL Serve
       "command": "uvx",
       "args": ["jewei-mcp-mssql"],
       "env": {
-        "MSSQL_HOST": "localhost",
-        "MSSQL_PORT": "1433",
-        "MSSQL_DATABASE": "master",
-        "MSSQL_USERNAME": "sa",
-        "MSSQL_PASSWORD": "your_password"
+        "DB_HOST": "localhost",
+        "DB_PORT": "1433",
+        "DB_NAME": "master",
+        "DB_USER": "sa",
+        "DB_PASSWORD": "your_password"
       }
     }
   }
@@ -44,9 +44,9 @@ Microsoft SQL Server MCP Server — 让 AI 助手能够查询和操作 SQL Serve
       "command": "uvx",
       "args": ["jewei-mcp-mssql"],
       "env": {
-        "MSSQL_HOST": "localhost",
-        "MSSQL_USERNAME": "sa",
-        "MSSQL_PASSWORD": "your_password"
+        "DB_HOST": "localhost",
+        "DB_USER": "sa",
+        "DB_PASSWORD": "your_password"
       }
     }
   }
@@ -66,9 +66,9 @@ Microsoft SQL Server MCP Server — 让 AI 助手能够查询和操作 SQL Serve
       "command": ["uvx", "jewei-mcp-mssql"],
       "enabled": true,
       "environment": {
-        "MSSQL_HOST": "localhost",
-        "MSSQL_USERNAME": "sa",
-        "MSSQL_PASSWORD": "your_password"
+        "DB_HOST": "localhost",
+        "DB_USER": "sa",
+        "DB_PASSWORD": "your_password"
       }
     }
   }
@@ -86,9 +86,9 @@ Microsoft SQL Server MCP Server — 让 AI 助手能够查询和操作 SQL Serve
       "command": "uvx",
       "args": ["jewei-mcp-mssql"],
       "env": {
-        "MSSQL_HOST": "localhost",
-        "MSSQL_USERNAME": "sa",
-        "MSSQL_PASSWORD": "your_password"
+        "DB_HOST": "localhost",
+        "DB_USER": "sa",
+        "DB_PASSWORD": "your_password"
       }
     }
   }
@@ -101,20 +101,20 @@ Microsoft SQL Server MCP Server — 让 AI 助手能够查询和操作 SQL Serve
 
 | 变量 | 说明 | 必填 | 默认值 |
 |------|------|------|--------|
-| `MSSQL_HOST` | SQL Server 主机地址 | 是 | `localhost` |
-| `MSSQL_PORT` | SQL Server 端口 | 否 | `1433` |
-| `MSSQL_DATABASE` | 默认数据库 | 否 | `master` |
-| `MSSQL_USERNAME` | 用户名 | 是 | - |
-| `MSSQL_PASSWORD` | 密码 | 是 | - |
+| `DB_HOST` | SQL Server 主机地址 | 是 | `localhost` |
+| `DB_PORT` | SQL Server 端口 | 否 | `1433` |
+| `DB_NAME` | 默认数据库 | 否 | `master` |
+| `DB_USER` | 用户名 | 是 | - |
+| `DB_PASSWORD` | 密码 | 是 | - |
 
 ### 权限控制
 
 | 变量 | 说明 | 默认值 |
 |------|------|--------|
-| `MSSQL_ALLOW_INSERT` | 是否允许 INSERT | `false` |
-| `MSSQL_ALLOW_UPDATE` | 是否允许 UPDATE | `false` |
-| `MSSQL_ALLOW_DELETE` | 是否允许 DELETE | `false` |
-| `MSSQL_ALLOW_DDL` | 是否允许 DDL（CREATE/DROP/ALTER/TRUNCATE） | `false` |
+| `DB_ALLOW_INSERT` | 是否允许 INSERT | `false` |
+| `DB_ALLOW_UPDATE` | 是否允许 UPDATE | `false` |
+| `DB_ALLOW_DELETE` | 是否允许 DELETE | `false` |
+| `DB_ALLOW_DDL` | 是否允许 DDL（CREATE/DROP/ALTER/TRUNCATE） | `false` |
 
 ### 传输模式
 
