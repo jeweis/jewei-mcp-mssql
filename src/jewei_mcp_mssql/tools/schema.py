@@ -7,16 +7,6 @@ from pydantic import BaseModel, ConfigDict, Field
 from jewei_mcp_mssql.utils.connection import execute, handle_db_error
 
 
-class ListDatabasesInput(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    response_format: str = Field(
-        default="markdown",
-        description="输出格式：markdown 或 json",
-        pattern="^(markdown|json)$",
-    )
-
-
 class ListTablesInput(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
@@ -41,25 +31,6 @@ class DescribeTableInput(BaseModel):
         description="输出格式：markdown 或 json",
         pattern="^(markdown|json)$",
     )
-
-
-async def list_databases(params: ListDatabasesInput) -> str:
-    sql = "SELECT name, state_desc, create_date FROM sys.databases ORDER BY name"
-    try:
-        rows = await execute(sql)
-    except Exception as e:
-        return handle_db_error(e)
-
-    if params.response_format == "json":
-        return json.dumps(rows, ensure_ascii=False, default=str)
-
-    if not rows:
-        return "未找到任何数据库"
-
-    lines = ["| 数据库名 | 状态 | 创建时间 |", "| --- | --- | --- |"]
-    for r in rows:
-        lines.append(f"| {r['name']} | {r['state_desc']} | {r['create_date']} |")
-    return "\n".join(lines)
 
 
 async def list_tables(params: ListTablesInput) -> str:

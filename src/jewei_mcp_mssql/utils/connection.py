@@ -12,7 +12,7 @@ def _get_conn_params() -> dict[str, Any]:
     return {
         "server": os.getenv("DB_HOST", "localhost"),
         "port": int(os.getenv("DB_PORT", "1433")),
-        "database": os.getenv("DB_NAME", "master"),
+        "database": os.getenv("DB_NAME") or "",
         "user": os.getenv("DB_USER", ""),
         "password": os.getenv("DB_PASSWORD", ""),
         "as_dict": True,

@@ -10,10 +10,8 @@ from pydantic import Field
 from jewei_mcp_mssql.tools.execute import ExecuteSqlInput, execute_sql
 from jewei_mcp_mssql.tools.schema import (
     DescribeTableInput,
-    ListDatabasesInput,
     ListTablesInput,
     describe_table,
-    list_databases,
     list_tables,
 )
 
@@ -55,26 +53,6 @@ async def tool_execute_sql(
     return await execute_sql(
         ExecuteSqlInput(sql=sql, max_rows=max_rows, response_format=response_format)
     )
-
-
-@mcp.tool(
-    name="mssql_list_databases",
-    annotations=ToolAnnotations(
-        title="列出数据库",
-        readOnlyHint=True,
-        destructiveHint=False,
-        idempotentHint=True,
-        openWorldHint=True,
-    ),
-)
-async def tool_list_databases(
-    response_format: Annotated[
-        str,
-        Field(description="输出格式：markdown 或 json", pattern="^(markdown|json)$"),
-    ] = "markdown",
-) -> str:
-    """列出当前连接用户可访问的所有数据库。"""
-    return await list_databases(ListDatabasesInput(response_format=response_format))
 
 
 @mcp.tool(
