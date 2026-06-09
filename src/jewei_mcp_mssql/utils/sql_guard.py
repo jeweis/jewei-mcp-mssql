@@ -54,10 +54,7 @@ def check_permission(sql_type: SqlType) -> str | None:
     if sql_type in checks:
         env_var, label = checks[sql_type]
         if not _env_bool(env_var):
-            return (
-                f"权限拒绝：{label} 操作未启用。"
-                f"如需允许，请设置环境变量 {env_var}=true"
-            )
+            return f"权限拒绝：{label} 操作未启用。如需允许，请设置环境变量 {env_var}=true"
         return None
 
     return "权限拒绝：无法识别的 SQL 类型，仅允许 SELECT/INSERT/UPDATE/DELETE/DDL"

@@ -42,10 +42,7 @@ def _rows_to_markdown(rows: list[dict], affected_only: bool = False) -> str:
     keys = list(rows[0].keys())
     header = "| " + " | ".join(str(k) for k in keys) + " |"
     sep = "| " + " | ".join("---" for _ in keys) + " |"
-    body = "\n".join(
-        "| " + " | ".join(str(row.get(k, "")) for k in keys) + " |"
-        for row in rows
-    )
+    body = "\n".join("| " + " | ".join(str(row.get(k, "")) for k in keys) + " |" for row in rows)
     return f"{header}\n{sep}\n{body}"
 
 
