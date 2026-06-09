@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
@@ -28,6 +28,14 @@ dependencies = [
     "pydantic>=2.0.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.4.0",
+    "mypy>=1.10.0",
+]
+
 [project.urls]
 Homepage = "https://github.com/jeweis/jewei-mcp-mssql"
 Repository = "https://github.com/jeweis/jewei-mcp-mssql"
@@ -38,8 +46,17 @@ jewei-mcp-mssql = "jewei_mcp_mssql.server:main"
 [tool.hatch.build.targets.wheel]
 packages = ["src/jewei_mcp_mssql"]
 
-[tool.hatch.version]
-source = "vcs"
+[tool.ruff]
+line-length = 100
+target-version = "py310"
 
-[tool.hatch.version.raw-options]
-version_scheme = "no-guess-dev"
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
