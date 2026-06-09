@@ -5,10 +5,10 @@ import os
 from functools import partial
 from typing import Any
 
-import pytds
+import pytds  # type: ignore[import-untyped]
 
 
-def _get_conn_params() -> dict:
+def _get_conn_params() -> dict[str, Any]:
     return {
         "server": os.getenv("MSSQL_HOST", "localhost"),
         "port": int(os.getenv("MSSQL_PORT", "1433")),
@@ -19,17 +19,17 @@ def _get_conn_params() -> dict:
     }
 
 
-def _sync_execute(sql: str, params: Any) -> list[dict]:
+def _sync_execute(sql: str, params: Any) -> list[dict[str, Any]]:
     with pytds.connect(**_get_conn_params()) as conn:
         with conn.cursor() as cur:
             cur.execute(sql, params)
             if cur.description:
-                return cur.fetchall()
+                return list(cur.fetchall())
             conn.commit()
             return [{"affected_rows": cur.rowcount}]
 
 
-async def execute(sql: str, params: Any = None) -> list[dict]:
+async def execute(sql: str, params: Any = None) -> list[dict[str, Any]]:
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, partial(_sync_execute, sql, params))
 

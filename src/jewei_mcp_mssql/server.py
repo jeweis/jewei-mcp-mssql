@@ -3,6 +3,7 @@
 import os
 
 from mcp.server.fastmcp import FastMCP
+from mcp.types import ToolAnnotations
 
 from jewei_mcp_mssql.tools.execute import ExecuteSqlInput, execute_sql
 from jewei_mcp_mssql.tools.schema import (
@@ -19,13 +20,13 @@ mcp = FastMCP("mssql_mcp")
 
 @mcp.tool(
     name="mssql_execute_sql",
-    annotations={
-        "title": "执行 SQL 语句",
-        "readOnlyHint": False,
-        "destructiveHint": True,
-        "idempotentHint": False,
-        "openWorldHint": True,
-    },
+    annotations=ToolAnnotations(
+        title="执行 SQL 语句",
+        readOnlyHint=False,
+        destructiveHint=True,
+        idempotentHint=False,
+        openWorldHint=True,
+    ),
 )
 async def tool_execute_sql(params: ExecuteSqlInput) -> str:
     """执行 SQL 语句。
@@ -41,7 +42,6 @@ async def tool_execute_sql(params: ExecuteSqlInput) -> str:
 
     参数：
         params.sql: 要执行的 SQL 语句
-        params.database: 可选，覆盖默认数据库
         params.max_rows: SELECT 最大返回行数，默认 100，最大 500
         params.response_format: 输出格式，markdown 或 json
     """
@@ -50,13 +50,13 @@ async def tool_execute_sql(params: ExecuteSqlInput) -> str:
 
 @mcp.tool(
     name="mssql_list_databases",
-    annotations={
-        "title": "列出数据库",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": True,
-    },
+    annotations=ToolAnnotations(
+        title="列出数据库",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=True,
+    ),
 )
 async def tool_list_databases(params: ListDatabasesInput) -> str:
     """列出当前连接用户可访问的所有数据库。
@@ -69,20 +69,19 @@ async def tool_list_databases(params: ListDatabasesInput) -> str:
 
 @mcp.tool(
     name="mssql_list_tables",
-    annotations={
-        "title": "列出数据表",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": True,
-    },
+    annotations=ToolAnnotations(
+        title="列出数据表",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=True,
+    ),
 )
 async def tool_list_tables(params: ListTablesInput) -> str:
     """列出指定数据库下的所有表。
 
     参数：
-        params.database: 数据库名称，不填则使用默认库
-        params.schema: Schema 名称，默认 dbo
+        params.table_schema: Schema 名称，默认 dbo
         params.response_format: 输出格式，markdown 或 json
     """
     return await list_tables(params)
@@ -90,31 +89,30 @@ async def tool_list_tables(params: ListTablesInput) -> str:
 
 @mcp.tool(
     name="mssql_describe_table",
-    annotations={
-        "title": "描述表结构",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": True,
-    },
+    annotations=ToolAnnotations(
+        title="描述表结构",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=True,
+    ),
 )
 async def tool_describe_table(params: DescribeTableInput) -> str:
     """获取指定表的列结构，包括列名、数据类型、最大长度、可空性和默认值。
 
     参数：
         params.table_name: 表名
-        params.schema: Schema 名称，默认 dbo
-        params.database: 数据库名称，不填则使用默认库
+        params.table_schema: Schema 名称，默认 dbo
         params.response_format: 输出格式，markdown 或 json
     """
     return await describe_table(params)
 
 
-def main():
+def main() -> None:
     transport = os.getenv("MCP_TRANSPORT", "stdio")
-    if transport == "streamable_http":
-        port = int(os.getenv("MCP_PORT", "8000"))
-        mcp.run(transport="streamable_http", port=port)
+    if transport == "streamable-http":
+        mcp.settings.port = int(os.getenv("MCP_PORT", "8000"))
+        mcp.run(transport="streamable-http")
     else:
         mcp.run()
 

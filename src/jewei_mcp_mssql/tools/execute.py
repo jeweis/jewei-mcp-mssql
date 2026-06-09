@@ -1,16 +1,12 @@
 """mssql_execute_sql 工具实现"""
 
 import json
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from jewei_mcp_mssql.utils.connection import execute, handle_db_error
 from jewei_mcp_mssql.utils.sql_guard import check_permission, detect_sql_type
-
-
-class ResponseFormat(str):
-    MARKDOWN = "markdown"
-    JSON = "json"
 
 
 class ExecuteSqlInput(BaseModel):
@@ -34,7 +30,7 @@ class ExecuteSqlInput(BaseModel):
     )
 
 
-def _rows_to_markdown(rows: list[dict], affected_only: bool = False) -> str:
+def _rows_to_markdown(rows: list[dict[str, Any]], affected_only: bool = False) -> str:
     if affected_only or not rows:
         affected = rows[0].get("affected_rows", 0) if rows else 0
         return f"执行成功，影响行数：**{affected}**"
@@ -57,7 +53,6 @@ async def execute_sql(params: ExecuteSqlInput) -> str:
     except Exception as e:
         return handle_db_error(e)
 
-    # 判断是否为查询结果（有实际数据列）
     is_query = rows and "affected_rows" not in rows[0]
 
     if is_query:
@@ -72,8 +67,7 @@ async def execute_sql(params: ExecuteSqlInput) -> str:
         note = ""
 
     if params.response_format == "json":
-        return json.dumps(truncated, ensure_ascii=False, default=str) + (
-            f"\n// {len(rows)} rows, showing {len(truncated)}" if note else ""
-        )
+        suffix = f"\n// {len(rows)} rows, showing {len(truncated)}" if note else ""
+        return json.dumps(truncated, ensure_ascii=False, default=str) + suffix
 
     return _rows_to_markdown(truncated, affected_only=not is_query) + note

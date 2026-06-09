@@ -1,6 +1,7 @@
 """mssql_list_databases / mssql_list_tables / mssql_describe_table 工具实现"""
 
 import json
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -20,7 +21,7 @@ class ListDatabasesInput(BaseModel):
 class ListTablesInput(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
-    schema: str = Field(
+    table_schema: str = Field(
         default="dbo",
         description="Schema 名称",
     )
@@ -35,7 +36,7 @@ class DescribeTableInput(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
     table_name: str = Field(..., description="表名", min_length=1)
-    schema: str = Field(default="dbo", description="Schema 名称")
+    table_schema: str = Field(default="dbo", description="Schema 名称")
     response_format: str = Field(
         default="markdown",
         description="输出格式：markdown 或 json",
@@ -70,7 +71,7 @@ async def list_tables(params: ListTablesInput) -> str:
         ORDER BY TABLE_SCHEMA, TABLE_NAME
     """
     try:
-        rows = await execute(sql, params=(params.schema,))
+        rows = await execute(sql, params=(params.table_schema,))
     except Exception as e:
         return handle_db_error(e)
 
@@ -78,7 +79,7 @@ async def list_tables(params: ListTablesInput) -> str:
         return json.dumps(rows, ensure_ascii=False, default=str)
 
     if not rows:
-        return f"Schema `{params.schema}` 下未找到任何表"
+        return f"Schema `{params.table_schema}` 下未找到任何表"
 
     lines = ["| Schema | 表名 | 类型 |", "| --- | --- | --- |"]
     for r in rows:
@@ -100,18 +101,18 @@ async def describe_table(params: DescribeTableInput) -> str:
         ORDER BY ORDINAL_POSITION
     """
     try:
-        rows = await execute(sql, params=(params.table_name, params.schema))
+        rows = await execute(sql, params=(params.table_name, params.table_schema))
     except Exception as e:
         return handle_db_error(e)
 
     if not rows:
-        return f"表 `{params.schema}.{params.table_name}` 不存在或无列信息"
+        return f"表 `{params.table_schema}.{params.table_name}` 不存在或无列信息"
 
     if params.response_format == "json":
         return json.dumps(rows, ensure_ascii=False, default=str)
 
-    lines = [
-        f"## {params.schema}.{params.table_name}",
+    lines: list[str] = [
+        f"## {params.table_schema}.{params.table_name}",
         "",
         "| # | 列名 | 类型 | 最大长度 | 可空 | 默认值 |",
         "| --- | --- | --- | --- | --- | --- |",
