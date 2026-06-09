@@ -12,6 +12,7 @@ from jewei_mcp_mssql.tools.schema import (
     DescribeTableInput,
     ListTablesInput,
     describe_table,
+    get_db_info,
     list_tables,
 )
 
@@ -53,6 +54,26 @@ async def tool_execute_sql(
     return await execute_sql(
         ExecuteSqlInput(sql=sql, max_rows=max_rows, response_format=response_format)
     )
+
+
+@mcp.tool(
+    name="mssql_get_db_info",
+    annotations=ToolAnnotations(
+        title="获取数据库基本信息",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=True,
+    ),
+)
+async def tool_get_db_info(
+    response_format: Annotated[
+        str,
+        Field(description="输出格式：markdown 或 json", pattern="^(markdown|json)$"),
+    ] = "markdown",
+) -> str:
+    """获取当前数据库的基本信息，包括数据库名称、服务器名称、版本、当前用户等。"""
+    return await get_db_info(response_format=response_format)
 
 
 @mcp.tool(

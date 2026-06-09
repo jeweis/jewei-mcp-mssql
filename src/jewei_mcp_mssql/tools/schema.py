@@ -33,6 +33,43 @@ class DescribeTableInput(BaseModel):
     )
 
 
+async def get_db_info(response_format: str = "markdown") -> str:
+    sql = """
+        SELECT
+            DB_NAME()        AS database_name,
+            @@SERVERNAME     AS server_name,
+            @@VERSION        AS server_version,
+            SUSER_SNAME()    AS current_user,
+            @@LANGUAGE       AS language,
+            @@MAX_CONNECTIONS AS max_connections
+    """
+    try:
+        rows = await execute(sql)
+    except Exception as e:
+        return handle_db_error(e)
+
+    if not rows:
+        return "无法获取数据库信息"
+
+    info = rows[0]
+
+    if response_format == "json":
+        return json.dumps(info, ensure_ascii=False, default=str)
+
+    version_line = str(info.get("server_version", "")).split("\n")[0]
+    lines = [
+        "## 数据库基本信息",
+        "",
+        f"- **数据库名称**：{info.get('database_name')}",
+        f"- **服务器名称**：{info.get('server_name')}",
+        f"- **当前用户**：{info.get('current_user')}",
+        f"- **语言**：{info.get('language')}",
+        f"- **最大连接数**：{info.get('max_connections')}",
+        f"- **版本**：{version_line}",
+    ]
+    return "\n".join(lines)
+
+
 async def list_tables(params: ListTablesInput) -> str:
     sql = """
         SELECT TABLE_SCHEMA, TABLE_NAME, TABLE_TYPE
