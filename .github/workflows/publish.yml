@@ -2,8 +2,8 @@ name: Publish to PyPI
 
 on:
   push:
-    tags:
-      - 'v*.*.*'
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -38,6 +38,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -49,10 +51,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install build twine
 
-      - name: Get version from tag
+      - name: Get version from commit count
         id: get_version
         run: |
-          VERSION="${GITHUB_REF#refs/tags/v}"
+          COUNT=$(git rev-list --count HEAD)
+          VERSION="0.1.${COUNT}"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "Building version: $VERSION"
 
@@ -87,3 +90,5 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
