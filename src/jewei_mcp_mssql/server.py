@@ -1,9 +1,11 @@
 """MSSQL MCP Server 主入口"""
 
 import os
+from typing import Annotated
 
 from mcp.server.fastmcp import FastMCP
 from mcp.types import ToolAnnotations
+from pydantic import Field
 
 from jewei_mcp_mssql.tools.execute import ExecuteSqlInput, execute_sql
 from jewei_mcp_mssql.tools.schema import (
@@ -28,7 +30,17 @@ mcp = FastMCP("mssql_mcp")
         openWorldHint=True,
     ),
 )
-async def tool_execute_sql(params: ExecuteSqlInput) -> str:
+async def tool_execute_sql(
+    sql: Annotated[str, Field(description="要执行的 SQL 语句", min_length=1)],
+    max_rows: Annotated[
+        int,
+        Field(description="SELECT 查询最大返回行数，默认 100，最大 500", ge=1, le=500),
+    ] = 100,
+    response_format: Annotated[
+        str,
+        Field(description="输出格式：markdown 或 json", pattern="^(markdown|json)$"),
+    ] = "markdown",
+) -> str:
     """执行 SQL 语句。
 
     支持 SELECT 查询以及可选的 INSERT / UPDATE / DELETE / DDL 操作。
@@ -39,13 +51,10 @@ async def tool_execute_sql(params: ExecuteSqlInput) -> str:
     - DB_ALLOW_DDL=true      启用 DDL（CREATE/DROP/ALTER/TRUNCATE）
 
     默认仅允许 SELECT，所有写操作均被拒绝。
-
-    参数：
-        params.sql: 要执行的 SQL 语句
-        params.max_rows: SELECT 最大返回行数，默认 100，最大 500
-        params.response_format: 输出格式，markdown 或 json
     """
-    return await execute_sql(params)
+    return await execute_sql(
+        ExecuteSqlInput(sql=sql, max_rows=max_rows, response_format=response_format)
+    )
 
 
 @mcp.tool(
@@ -58,13 +67,14 @@ async def tool_execute_sql(params: ExecuteSqlInput) -> str:
         openWorldHint=True,
     ),
 )
-async def tool_list_databases(params: ListDatabasesInput) -> str:
-    """列出当前连接用户可访问的所有数据库。
-
-    参数：
-        params.response_format: 输出格式，markdown 或 json
-    """
-    return await list_databases(params)
+async def tool_list_databases(
+    response_format: Annotated[
+        str,
+        Field(description="输出格式：markdown 或 json", pattern="^(markdown|json)$"),
+    ] = "markdown",
+) -> str:
+    """列出当前连接用户可访问的所有数据库。"""
+    return await list_databases(ListDatabasesInput(response_format=response_format))
 
 
 @mcp.tool(
@@ -77,14 +87,17 @@ async def tool_list_databases(params: ListDatabasesInput) -> str:
         openWorldHint=True,
     ),
 )
-async def tool_list_tables(params: ListTablesInput) -> str:
-    """列出指定数据库下的所有表。
-
-    参数：
-        params.table_schema: Schema 名称，默认 dbo
-        params.response_format: 输出格式，markdown 或 json
-    """
-    return await list_tables(params)
+async def tool_list_tables(
+    table_schema: Annotated[str, Field(description="Schema 名称，默认 dbo")] = "dbo",
+    response_format: Annotated[
+        str,
+        Field(description="输出格式：markdown 或 json", pattern="^(markdown|json)$"),
+    ] = "markdown",
+) -> str:
+    """列出当前数据库下的所有表。"""
+    return await list_tables(
+        ListTablesInput(table_schema=table_schema, response_format=response_format)
+    )
 
 
 @mcp.tool(
@@ -97,15 +110,22 @@ async def tool_list_tables(params: ListTablesInput) -> str:
         openWorldHint=True,
     ),
 )
-async def tool_describe_table(params: DescribeTableInput) -> str:
-    """获取指定表的列结构，包括列名、数据类型、最大长度、可空性和默认值。
-
-    参数：
-        params.table_name: 表名
-        params.table_schema: Schema 名称，默认 dbo
-        params.response_format: 输出格式，markdown 或 json
-    """
-    return await describe_table(params)
+async def tool_describe_table(
+    table_name: Annotated[str, Field(description="表名", min_length=1)],
+    table_schema: Annotated[str, Field(description="Schema 名称，默认 dbo")] = "dbo",
+    response_format: Annotated[
+        str,
+        Field(description="输出格式：markdown 或 json", pattern="^(markdown|json)$"),
+    ] = "markdown",
+) -> str:
+    """获取指定表的列结构，包括列名、数据类型、最大长度、可空性和默认值。"""
+    return await describe_table(
+        DescribeTableInput(
+            table_name=table_name,
+            table_schema=table_schema,
+            response_format=response_format,
+        )
+    )
 
 
 def main() -> None:
