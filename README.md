@@ -127,27 +127,31 @@ Microsoft SQL Server MCP Server — 让 AI 助手能够查询和操作 SQL Serve
 
 | 工具 | 说明 |
 |------|------|
+| `mssql_get_db_info` | 获取当前数据库基本信息（版本、服务器名、当前用户等） |
 | `mssql_execute_sql` | 执行 SQL 语句（SELECT 始终允许，写操作受环境变量控制） |
-| `mssql_list_databases` | 列出所有可访问的数据库 |
-| `mssql_list_tables` | 列出指定数据库下的所有表 |
+| `mssql_list_tables` | 列出当前数据库下的所有表 |
 | `mssql_describe_table` | 获取表的列结构（列名、类型、可空性等） |
 
 ## 提示示例
 
 ```
-查询 orders 表中最近 10 条记录
+查一下当前连接的是哪个数据库，SQL Server 版本是多少
 ```
 
 ```
-列出 AdventureWorks 数据库里所有的表
+列出当前数据库里所有的表
 ```
 
 ```
-描述 dbo.Customers 表的结构
+描述一下 dbo.Orders 表的结构
 ```
 
 ```
-统计 sales 库中每个城市的订单数量，按数量降序排列
+查询 dbo.Orders 表中最近 10 条记录
+```
+
+```
+统计 dbo.Orders 表中每个状态的订单数量，按数量降序排列
 ```
 
 ## License
